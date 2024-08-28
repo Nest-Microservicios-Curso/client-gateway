@@ -15,6 +15,8 @@ import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError, firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
 import { PRODUCTS_SERVICE } from 'src/config';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -23,8 +25,12 @@ export class ProductsController {
   ) {}
 
   @Post()
-  create(@Body() product: any) {
-    return { message: 'Create a new product...', data: product };
+  create(@Body() product: CreateProductDto) {
+    return this.productClient.send({ cmd: 'create' }, product).pipe(
+      catchError((error) => {
+        throw new RpcException(error);
+      }),
+    );
   }
 
   @Get()
@@ -53,13 +59,21 @@ export class ProductsController {
     // }
   }
 
-  @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() product: any) {
-    return { message: `Update product #${id}...`, data: product };
+  @Patch()
+  update(@Body() product: UpdateProductDto) {
+    return this.productClient.send({ cmd: 'update' }, product).pipe(
+      catchError((error) => {
+        throw new RpcException(error);
+      }),
+    );
   }
 
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
-    return { message: `Delete product #${id}...` };
+    return this.productClient.send({ cmd: 'deleteProduct' }, { id }).pipe(
+      catchError((error) => {
+        throw new RpcException(error);
+      }),
+    );
   }
 }

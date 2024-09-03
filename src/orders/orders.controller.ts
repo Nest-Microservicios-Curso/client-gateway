@@ -29,12 +29,12 @@ export class OrdersController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string) {
     return this.ordersClient.send({ cmd: 'getById' }, { id });
   }
 
   @Put(':id')
-  setStatus(@Param('id', ParseIntPipe) id: number) {
+  setStatus(@Param('id') id: string) {
     return this.ordersClient.send({ cmd: 'setStatus' }, { id });
   }
 }

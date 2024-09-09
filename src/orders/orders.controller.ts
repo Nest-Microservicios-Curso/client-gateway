@@ -5,14 +5,18 @@ import {
   Body,
   Param,
   Inject,
-  Put,
   ParseUUIDPipe,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { ORDERS_SERVICE } from 'src/config';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError } from 'rxjs';
-import { CreateOrderDto, OrdersPaginationDto } from './dto';
+import {
+  CreateOrderDto,
+  OrdersPaginationDto,
+  UpdateOrderStatusDto,
+} from './dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -39,8 +43,12 @@ export class OrdersController {
     );
   }
 
-  @Put(':id')
-  setStatus(@Param('id') id: string) {
-    return this.ordersClient.send({ cmd: 'setStatus' }, { id });
+  @Patch()
+  setStatus(@Body() updateOrderStatus: UpdateOrderStatusDto) {
+    return this.ordersClient.send({ cmd: 'setStatus' }, updateOrderStatus).pipe(
+      catchError((error) => {
+        throw new RpcException(error);
+      }),
+    );
   }
 }

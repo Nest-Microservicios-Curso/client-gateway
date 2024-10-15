@@ -25,7 +25,7 @@ export class ProductsController {
 
   @Post()
   create(@Body() product: CreateProductDto) {
-    return this.productClient.send({ cmd: 'create' }, product).pipe(
+    return this.productClient.send({ cmd: 'createProduct' }, product).pipe(
       catchError((error) => {
         throw new RpcException(error);
       }),
@@ -34,13 +34,13 @@ export class ProductsController {
 
   @Get()
   getAll(@Query() paginationDto: PaginationDto) {
-    return this.productClient.send({ cmd: 'getAll' }, paginationDto);
+    return this.productClient.send({ cmd: 'getAllProducts' }, paginationDto);
   }
 
   @Get(':id')
   async getbyId(@Param('id', ParseIntPipe) id: number) {
     // * FORMA 1 DE MANEJAR LAS EXCEPCIONES
-    return this.productClient.send({ cmd: 'getById' }, { id }).pipe(
+    return this.productClient.send({ cmd: 'getProductById' }, { id }).pipe(
       catchError((error) => {
         throw new RpcException(error);
       }),
@@ -60,7 +60,7 @@ export class ProductsController {
 
   @Patch()
   update(@Body() product: UpdateProductDto) {
-    return this.productClient.send({ cmd: 'update' }, product).pipe(
+    return this.productClient.send({ cmd: 'updateProduct' }, product).pipe(
       catchError((error) => {
         throw new RpcException(error);
       }),

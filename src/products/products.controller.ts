@@ -13,19 +13,17 @@ import {
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError } from 'rxjs';
 import { PaginationDto } from 'src/common';
-import { PRODUCTS_SERVICE } from 'src/config';
+import { NATS_SERVER } from 'src/config';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(
-    @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy,
-  ) {}
+  constructor(@Inject(NATS_SERVER) private readonly natsClient: ClientProxy) {}
 
   @Post()
   create(@Body() product: CreateProductDto) {
-    return this.productClient.send({ cmd: 'createProduct' }, product).pipe(
+    return this.natsClient.send({ cmd: 'createProduct' }, product).pipe(
       catchError((error) => {
         throw new RpcException(error);
       }),
@@ -34,13 +32,13 @@ export class ProductsController {
 
   @Get()
   getAll(@Query() paginationDto: PaginationDto) {
-    return this.productClient.send({ cmd: 'getAllProducts' }, paginationDto);
+    return this.natsClient.send({ cmd: 'getAllProducts' }, paginationDto);
   }
 
   @Get(':id')
   async getbyId(@Param('id', ParseIntPipe) id: number) {
     // * FORMA 1 DE MANEJAR LAS EXCEPCIONES
-    return this.productClient.send({ cmd: 'getProductById' }, { id }).pipe(
+    return this.natsClient.send({ cmd: 'getProductById' }, { id }).pipe(
       catchError((error) => {
         throw new RpcException(error);
       }),
@@ -60,7 +58,7 @@ export class ProductsController {
 
   @Patch()
   update(@Body() product: UpdateProductDto) {
-    return this.productClient.send({ cmd: 'updateProduct' }, product).pipe(
+    return this.natsClient.send({ cmd: 'updateProduct' }, product).pipe(
       catchError((error) => {
         throw new RpcException(error);
       }),
@@ -69,7 +67,7 @@ export class ProductsController {
 
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
-    return this.productClient.send({ cmd: 'deleteProduct' }, { id }).pipe(
+    return this.natsClient.send({ cmd: 'deleteProduct' }, { id }).pipe(
       catchError((error) => {
         throw new RpcException(error);
       }),

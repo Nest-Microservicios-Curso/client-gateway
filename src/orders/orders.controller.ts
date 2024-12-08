@@ -9,7 +9,7 @@ import {
   Query,
   Patch,
 } from '@nestjs/common';
-import { NATS_SERVER } from 'src/config';
+import { NATS_SERVICE } from 'src/config';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError } from 'rxjs';
 import {
@@ -20,7 +20,7 @@ import {
 
 @Controller('orders')
 export class OrdersController {
-  constructor(@Inject(NATS_SERVER) private readonly natsClient: ClientProxy) {}
+  constructor(@Inject(NATS_SERVICE) private readonly natsClient: ClientProxy) {}
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
